@@ -1,65 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Line from CSV</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-        #output {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #333;
-            padding: 20px;
-            border: 2px solid #007BFF;
-            border-radius: 10px;
-            background: #fff;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-</head>
-<body>
-    <div id="output">Lade Daten...</div>
-    <script>
-        async function loadCSV() {
-            try {
-                const csvURL = './data.csv'; // CSV-Datei im gleichen Verzeichnis
-                console.log('Versuche, die CSV-Datei zu laden:', csvURL);
-
-                const response = await fetch(csvURL);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP-Fehler: ${response.status} ${response.statusText}`);
-                }
-
-                const csvData = await response.text();
-                console.log('CSV-Datei erfolgreich geladen:', csvData);
-
-                // Zeilenweise verarbeiten
-                const rows = csvData.split('\n').map(row => row.trim()).filter(row => row !== '');
-                if (rows.length === 0) {
-                    throw new Error('Die CSV-Datei enthält keine Zeilen.');
-                }
-
-                // Zufällige Zeile auswählen
-                const randomRow = rows[Math.floor(Math.random() * rows.length)];
-                document.getElementById('output').textContent = randomRow;
-            } catch (error) {
-                document.getElementById('output').textContent = 'Fehler beim Laden der CSV-Datei.';
-                console.error('Fehler beim Laden der CSV-Datei:', error);
-            }
-        }
-
-        loadCSV();
-    </script>
-</body>
-</html>
-
+﻿Auf den ersten Blick denkt man, du hast ein leichtes Aggressionsproblem. Aber dann merkt man: Du hast ein schweres Aggressionsproblem
+Petting…  klingt wie ein Ort in Bayern
+Wie heißt du? - Michael - Das ist schön…
+Jemand geht auf Toilette: Viel Glück. Erzähl nachher, wie's gelaufen ist.
+Ich gehe 5-6x ins Gym. - Das ist ja 7-8x häufiger als ich.
+Kommen Sie mir doch nicht mit Fakten. Das sind Tatsachen.
+Weißt du, was der Hammer ist? Ein Werkzeug!
+Ich bereue niemals nichts nie.
+„Kannst du lesen?“ „Ja wieso?“ „Weil in meiner Hose steht was.“
+Mein Körper ist eine Waffe - Mein Körper ist eine Waffel.
+Ich bin echt imprägniert von dir.
+"""Bikiniform ist gut, aber Auflaufform ist besser"". "
+Es ist doch merkwürdig, dass man auf alten Fotos jünger aussieht.
+Man trifft auf geballte Inkontinenz.
