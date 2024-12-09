@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Line from CSV</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #output {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #333;
+            padding: 20px;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="output">Lade Daten...</div>
+    <script>
+        async function loadCSV() {
+            try {
+                const csvURL = './data.csv'; // CSV-Datei im gleichen Verzeichnis
+                console.log('Versuche, die CSV-Datei zu laden:', csvURL);
+
+                const response = await fetch(csvURL);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler: ${response.status} ${response.statusText}`);
+                }
+
+                const csvData = await response.text();
+                console.log('CSV-Datei erfolgreich geladen:', csvData);
+
+                // Zeilenweise verarbeiten
+                const rows = csvData.split('\n').map(row => row.trim()).filter(row => row !== '');
+                if (rows.length === 0) {
+                    throw new Error('Die CSV-Datei enthält keine Zeilen.');
+                }
+
+                // Zufällige Zeile auswählen
+                const randomRow = rows[Math.floor(Math.random() * rows.length)];
+                document.getElementById('output').textContent = randomRow;
+            } catch (error) {
+                document.getElementById('output').textContent = 'Fehler beim Laden der CSV-Datei.';
+                console.error('Fehler beim Laden der CSV-Datei:', error);
+            }
+        }
+
+        loadCSV();
+    </script>
+</body>
+</html>
+
