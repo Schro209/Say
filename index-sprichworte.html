@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprichworte</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: black;  /* Schwarzer Hintergrund */
+      color: white;  /* Weiße Schriftfarbe */
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
+    }
+
+    .content {
+      font-size: 2rem;
+      max-width: 90%;
+      word-wrap: break-word;
+      margin-bottom: 20px; /* Abstand nach unten */
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #4CAF50; /* Grüner Button */
+      color: white;  /* Weiße Schriftfarbe im Button */
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;  /* Dunklerer Grünton, wenn der Button gehighlighted wird */
+    }
+
+    .grey-text {
+      color: grey;  /* Graue Schrift für die zweite Spalte */
+    }
+
+    .white-text {
+      color: white;  /* Weiße Schrift für die erste Spalte und alle anderen */
+    }
+  </style>
+</head>
+<body>
+  <div class="content" id="csv-content">Wird geladen...</div>
+  <button onclick="loadRandomLine()">Nächstes Sprichwort</button>
+  <a href="index.html"><button id="back-button">Back</button></a>
+
+  <script>
+    const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/sprichworte.csv'; // Neue GitHub raw URL
+
+    let csvData = [];
+
+    // Funktion zum Laden der CSV-Datei (async)
+    async function loadCSV() {
+      try {
+        const response = await fetch(csvFile);
+        if (!response.ok) {
+          throw new Error('CSV-Datei konnte nicht geladen werden. Status: ' + response.status);
+        }
+
+        const text = await response.text();
+        csvData = parseCSV(text);  // CSV-Inhalt verarbeiten
+        if (csvData.length > 0) {
+          loadRandomLine(); // Zufällige Zeile anzeigen
+        } else {
+          document.getElementById('csv-content').innerText = 'CSV ist leer oder konnte nicht richtig geladen werden.';
+        }
+      } catch (error) {
+        document.getElementById('csv-content').innerText = 'Fehler beim Laden der CSV. ' + error.message;
+      }
+    }
+
+    // Funktion zum Parsen der CSV-Daten
+    function parseCSV(text) {
+      const rows = text.split('\n');
+      return rows.map(row => row.trim()).filter(row => row.length > 0);
+    }
+
+    // Funktion zum Anzeigen einer zufälligen Zeile aus den CSV-Daten
+    function loadRandomLine() {
+      if (csvData.length > 0) {
+        const randomIndex = Math.floor(Math.random() * csvData.length);
+        const randomLine = csvData[randomIndex];
+        displayCSVLine(randomLine); // CSV-Zeile anzeigen
+      } else {
+        document.getElementById('csv-content').innerText = 'Keine Daten verfügbar.';
+      }
+    }
+
+    // Funktion, um eine CSV-Zeile korrekt darzustellen
+    function displayCSVLine(line) {
+      const columns = line.split(';');  // CSV-Spalten trennen
+      let htmlContent = '';
+      let colorClass = 'white-text'; // Beginne mit der weißen Schrift für die erste Spalte
+
+      // Über alle Spalten der Zeile iterieren
+      columns.forEach((column, index) => {
+        if (column.trim() !== '') {
+          // Wenn die Spalte Text enthält, wechsle die Farbe abwechselnd
+          if (colorClass === 'white-text') {
+            htmlContent += `<div class="white-text">${column.trim()}</div>`;
+            colorClass = 'grey-text'; // Nächste Spalte grau
+          } else {
+            htmlContent += `<div class="grey-text">${column.trim()}</div>`;
+            colorClass = 'white-text'; // Nächste Spalte wieder weiß
+          }
+        }
+      });
+
+      document.getElementById('csv-content').innerHTML = htmlContent;
+    }
+
+    // CSV beim ersten Laden der Seite laden
+    window.onload = loadCSV;
+  </script>
+</body>
+</html>
+
