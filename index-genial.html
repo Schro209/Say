@@ -54,9 +54,10 @@
 </head>
 <body>
   <div class="content" id="csv-content">Wird geladen...</div>
-  <button onclick="loadRandomLine()">Nächste geniale Frage</button>
-  <a href="index.html"><button id="back-button">Back</button></a>
+  <button id="more-button" onclick="showNextColumn()" style="display:none;">Lösung anzeigen</button>
+  <button id="next-button" onclick="loadRandomLine()">Nächste geniale Quizfrage</button>
 
+  <a href="index.html"><button id="back-button">Back</button></a>
   <script>
     const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/genial.csv'; // Neue GitHub raw URL
 
