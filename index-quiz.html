@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: black; /* Schwarzer Hintergrund */
+      color: white; /* Weiße Schriftfarbe */
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column; /* Sorgt dafür, dass die Elemente untereinander angezeigt werden */
+    }
+
+    .content {
+      font-size: 2rem;
+      max-width: 90%;
+      word-wrap: break-word;
+      margin-bottom: 20px; /* Abstand nach unten */
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #4CAF50; /* Grüner Button */
+      color: white; /* Weiße Schriftfarbe im Button */
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049; /* Dunklerer Grünton beim Hover */
+    }
+
+    #back-button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background-color: #555; /* Dunkler grauer Button */
+      color: white; /* Weiße Schriftfarbe */
+      border: none;
+      border-radius: 5px;
+    }
+
+    #back-button:hover {
+      background-color: #777; /* Heller grauer Button beim Hover */
+    }
+
+    .grey-text {
+      color: grey; /* Graue Schrift */
+    }
+  </style>
+</head>
+<body>
+  <div class="content" id="csv-content">Wird geladen...</div>
+  <button id="more-button" onclick="showNextColumn()" style="display:none;">Lösung anzeigen</button>
+  <button id="next-button" onclick="loadRandomLine()">Nächste Quizfrage</button>
+
+  <a href="index.html"><button id="back-button">Back</button></a>
+
+  <script>
+    const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/quiz.csv'; // Neue GitHub raw URL
+
+    let csvData = [];
+    let currentLine = [];
+    let currentColumnIndex = 1; // Spaltenindex, der nach der ersten Spalte angezeigt wird
+
+    // Funktion zum Laden der CSV-Datei
+    async function loadCSV() {
+      try {
+        const response = await fetch(csvFile);
+        if (!response.ok) {
+          throw new Error('CSV-Datei konnte nicht geladen werden. Status: ' + response.status);
+        }
+
+        const text = await response.text();
+        csvData = parseCSV(text); // CSV-Inhalt verarbeiten
+        if (csvData.length > 0) {
+          loadRandomLine(); // Zufällige Zeile anzeigen
+        } else {
+          document.getElementById('csv-content').innerText = 'CSV ist leer oder konnte nicht richtig geladen werden.';
+        }
+      } catch (error) {
+        document.getElementById('csv-content').innerText = 'Fehler beim Laden der CSV. ' + error.message;
+      }
+    }
+
+    // Funktion zum Parsen der CSV-Daten
+    function parseCSV(text) {
+      const rows = text.split('\n');
+      return rows.map(row => row.split(';').map(col => col.trim())); // CSV-Zeilen in Spalten aufteilen
+    }
+
+    // Funktion zum Anzeigen einer zufälligen Zeile aus der CSV
+    function loadRandomLine() {
+      if (csvData.length > 0) {
+        const randomIndex = Math.floor(Math.random() * csvData.length);
+        currentLine = csvData[randomIndex];
+        currentColumnIndex = 1; // Reset des Spaltenindexes
+        displayColumn(0); // Nur die erste Spalte anzeigen
+        document.getElementById('more-button').style.display = 'inline-block'; // "Weitere Spalte anzeigen"-Button sichtbar machen
+      } else {
+        document.getElementById('csv-content').innerText = 'Keine Daten verfügbar.';
+      }
+    }
+
+    // Funktion zum Anzeigen einer bestimmten Spalte
+    function displayColumn(columnIndex) {
+      if (currentLine[columnIndex] && currentLine[columnIndex].trim() !== '') {
+        const contentDiv = document.getElementById('csv-content');
+        if (columnIndex === 0) {
+          contentDiv.innerHTML = `<div class="white-text">${currentLine[columnIndex]}</div>`;
+        } else {
+          contentDiv.innerHTML += `<div class="${columnIndex % 2 === 0 ? 'white-text' : 'grey-text'}">${currentLine[columnIndex]}</div>`;
+        }
+      }
+    }
+
+    // Funktion zum Anzeigen der nächsten Spalte
+    function showNextColumn() {
+      if (currentColumnIndex < currentLine.length) {
+        displayColumn(currentColumnIndex);
+        currentColumnIndex++;
+      } else {
+        document.getElementById('more-button').style.display = 'none'; // Button ausblenden, wenn keine weiteren Spalten vorhanden sind
+      }
+    }
+
+    // CSV beim ersten Laden der Seite laden
+    window.onload = loadCSV;
+  </script>
+</body>
+</html>
+
+
