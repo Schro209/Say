@@ -9,75 +9,104 @@
       height: 100%;
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: black; /* Schwarzer Hintergrund */
-      color: white; /* Weiße Schriftfarbe */
-    }
-
-    body {
+      background-color: black;  /* Schwarzer Hintergrund */
+      color: white;  /* Weiße Schriftfarbe */
+      padding: 10px 0; /* Oben und unten Platz lassen */
+      box-sizing: border-box; /* Padding in die Gesamthöhe einrechnen */
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
+      justify-content: space-between; /* Platz oben und unten ausgleichen */
+      align-items: center; /* Zentriert den Inhalt horizontal */
       text-align: center;
-      flex-direction: column; /* Sorgt dafür, dass die Elemente untereinander angezeigt werden */
     }
 
     .content {
       font-size: 2rem;
       max-width: 90%;
       word-wrap: break-word;
-      margin-bottom: 20px; /* Abstand nach unten */
+      margin: auto 0; /* Zentriert den Inhalt vertikal */
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center; /* Zentriert die Buttons horizontal */
+      align-items: center;
+      width: 90%;
+      gap: 20px; /* Abstand zwischen den Buttons */
+      margin-bottom: 10px; /* Abstand zum unteren Rand */
+    }
+
+    .button-container a {
+      position: absolute;
+      left: 10px; /* Positioniert den Menu-Button links */
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 1rem;
+      color: grey; /* Graue Schrift für die Fußzeile */
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 10px 20px;
       font-size: 1rem;
       cursor: pointer;
       background-color: #4CAF50; /* Grüner Button */
-      color: white; /* Weiße Schriftfarbe im Button */
+      color: white;  /* Weiße Schriftfarbe im Button */
       border: none;
       border-radius: 5px;
     }
 
     button:hover {
-      background-color: #45a049; /* Dunklerer Grünton beim Hover */
-    }
-
-    #back-button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      background-color: #555; /* Dunkler grauer Button */
-      color: white; /* Weiße Schriftfarbe */
-      border: none;
-      border-radius: 5px;
-    }
-
-    #back-button:hover {
-      background-color: #777; /* Heller grauer Button beim Hover */
+      background-color: #45a049;  /* Dunklerer Grünton, wenn der Button gehighlighted wird */
     }
 
     .grey-text {
-      color: grey; /* Graue Schrift */
+      color: grey;  /* Graue Schrift für die zweite Spalte */
+    }
+
+    .white-text {
+      color: white;  /* Weiße Schrift für die erste Spalte und alle anderen */
+    }
+
+    @media (max-height: 800px) {
+      .content {
+        font-size: 1.5rem; /* Kleinere Schriftgröße bei kleinerer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-height: 600px) {
+      .content {
+        font-size: 1rem; /* Noch kleinere Schriftgröße bei sehr geringer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-width: 400px) {
+      button {
+        font-size: 0.8rem; /* Kleinere Schriftgröße für Buttons bei schmalen Bildschirmen */
+      }
     }
   </style>
 </head>
 <body>
   <div class="content" id="csv-content">Wird geladen...</div>
-  <button id="more-button" onclick="showNextColumn()" style="display:none;">Lösung anzeigen</button>
-  <button id="next-button" onclick="loadRandomLine()">Nächste Quizfrage</button>
-
-  <a href="index.html"><button id="back-button">Back</button></a>
+  <div class="button-container">
+    <a href="index.html"><button id="menu-button">Menu</button></a>
+    <button onclick="loadRandomLine()">Nächste Frage</button>
+  </div>
+  <div class="footer" id="line-info">Data 0 / 0</div>
 
   <script>
     const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/quiz.csv'; // Neue GitHub raw URL
 
     let csvData = [];
-    let currentLine = [];
-    let currentColumnIndex = 1; // Spaltenindex, der nach der ersten Spalte angezeigt wird
+    let currentIndex = 0;
+    let currentLine = []; // Diese Variable speichert die aktuelle Zeile
 
-    // Funktion zum Laden der CSV-Datei
+    // Funktion zum Laden der CSV-Datei (async)
     async function loadCSV() {
       try {
         const response = await fetch(csvFile);
@@ -86,7 +115,7 @@
         }
 
         const text = await response.text();
-        csvData = parseCSV(text); // CSV-Inhalt verarbeiten
+        csvData = parseCSV(text);  // CSV-Inhalt verarbeiten
         if (csvData.length > 0) {
           loadRandomLine(); // Zufällige Zeile anzeigen
         } else {
@@ -99,43 +128,55 @@
 
     // Funktion zum Parsen der CSV-Daten
     function parseCSV(text) {
-      const rows = text.split('\n');
-      return rows.map(row => row.split(';').map(col => col.trim())); // CSV-Zeilen in Spalten aufteilen
+      return text.split('\n').map(row => row.trim()).filter(row => row.length > 0);
     }
 
-    // Funktion zum Anzeigen einer zufälligen Zeile aus der CSV
+    // Funktion zum Anzeigen einer zufälligen Zeile aus den CSV-Daten
     function loadRandomLine() {
       if (csvData.length > 0) {
-        const randomIndex = Math.floor(Math.random() * csvData.length);
-        currentLine = csvData[randomIndex];
-        currentColumnIndex = 1; // Reset des Spaltenindexes
-        displayColumn(0); // Nur die erste Spalte anzeigen
-        document.getElementById('more-button').style.display = 'inline-block'; // "Weitere Spalte anzeigen"-Button sichtbar machen
+        currentIndex = Math.floor(Math.random() * csvData.length);
+        currentLine = csvData[currentIndex].split(';'); // CSV-Zeile in Spalten aufteilen
+        displayCSVLine(currentLine[0]); // Nur die erste Spalte anzeigen
+        updateFooter(); // Fußzeileninfo aktualisieren
       } else {
         document.getElementById('csv-content').innerText = 'Keine Daten verfügbar.';
       }
     }
 
-    // Funktion zum Anzeigen einer bestimmten Spalte
-    function displayColumn(columnIndex) {
-      if (currentLine[columnIndex] && currentLine[columnIndex].trim() !== '') {
-        const contentDiv = document.getElementById('csv-content');
-        if (columnIndex === 0) {
-          contentDiv.innerHTML = `<div class="white-text">${currentLine[columnIndex]}</div>`;
-        } else {
-          contentDiv.innerHTML += `<div class="${columnIndex % 2 === 0 ? 'white-text' : 'grey-text'}">${currentLine[columnIndex]}</div>`;
-        }
-      }
+    // Funktion, um die erste Spalte der CSV-Zeile darzustellen
+    function displayCSVLine(firstColumn) {
+      document.getElementById('csv-content').innerHTML = `<div class="white-text">${firstColumn}</div>`;
+      // Lösung-Button anzeigen
+      const buttonContainer = document.querySelector('.button-container');
+      const solutionButton = document.createElement('button');
+      solutionButton.textContent = 'Lösung';
+      solutionButton.onclick = showSolution;
+      document.getElementById('csv-content').appendChild(solutionButton); // Button unter der ersten Zeile hinzufügen
     }
 
-    // Funktion zum Anzeigen der nächsten Spalte
-    function showNextColumn() {
-      if (currentColumnIndex < currentLine.length) {
-        displayColumn(currentColumnIndex);
-        currentColumnIndex++;
-      } else {
-        document.getElementById('more-button').style.display = 'none'; // Button ausblenden, wenn keine weiteren Spalten vorhanden sind
+    // Funktion, um die restlichen Spalten anzuzeigen und den "Lösung"-Button zu entfernen
+    function showSolution() {
+      let htmlContent = '';
+      let colorClass = 'grey-text'; // Setze die Farbe für die zweite Spalte auf grau
+
+      // Über alle Spalten der Zeile iterieren, beginnend ab der zweiten Spalte
+      for (let i = 1; i < currentLine.length; i++) {
+        if (currentLine[i].trim() !== '') {
+          htmlContent += `<div class="${colorClass}">${currentLine[i].trim()}</div>`;
+          // Setze die Farbe nach der zweiten Spalte auf abwechselnd grau und weiß
+          colorClass = colorClass === 'grey-text' ? 'white-text' : 'grey-text'; 
+        }
       }
+
+      document.getElementById('csv-content').innerHTML += htmlContent;
+      const solutionButton = document.getElementById('csv-content').querySelector('button'); // Lösung-Button
+      solutionButton.remove(); // Entferne den "Lösung"-Button
+    }
+
+    // Funktion zum Aktualisieren der Fußzeilen-Info
+    function updateFooter() {
+      const footer = document.getElementById('line-info');
+      footer.textContent = `Data ${currentIndex + 1} / ${csvData.length}`;
     }
 
     // CSV beim ersten Laden der Seite laden
