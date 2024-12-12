@@ -50,6 +50,24 @@
     .white-text {
       color: white;  /* Weiße Schrift für die erste Spalte und alle anderen */
     }
+
+    @media (max-height: 800px) {
+      .content {
+        font-size: 1.5rem; /* Kleinere Schriftgröße bei kleinerer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-height: 600px) {
+      .content {
+        font-size: 1rem; /* Noch kleinere Schriftgröße bei sehr geringer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-width: 400px) {
+      button {
+        font-size: 0.8rem; /* Kleinere Schriftgröße für Buttons bei schmalen Bildschirmen */
+      }
+    }
   </style>
 </head>
 <body>
@@ -127,4 +145,3 @@
   </script>
 </body>
 </html>
-
