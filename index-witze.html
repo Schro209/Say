@@ -19,6 +19,7 @@
       display: flex;
       flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
       justify-content: space-between; /* Platz oben und unten ausgleichen */
+      align-items: center; /* Zentriert den Inhalt horizontal */
       text-align: center;
     }
 
@@ -31,10 +32,25 @@
 
     .button-container {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: row;
+      justify-content: center; /* Zentriert die Buttons horizontal */
       align-items: center;
+      width: 90%;
+      gap: 20px; /* Abstand zwischen den Buttons */
       margin-bottom: 10px; /* Abstand zum unteren Rand */
+    }
+
+    .button-container a {
+      position: absolute;
+      left: 10px; /* Positioniert den Back-Button links */
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 1rem;
+      color: grey; /* Graue Schrift für die Fußzeile */
     }
 
     button {
@@ -82,14 +98,16 @@
 <body>
   <div class="content" id="csv-content">Wird geladen...</div>
   <div class="button-container">
-    <button onclick="loadRandomLine()">Nächster Witz</button>
     <a href="index.html"><button id="back-button">Back</button></a>
+    <button onclick="loadRandomLine()">Nächster Witz</button>
   </div>
+  <div class="footer" id="line-info">Zeile 0 / 0</div>
 
   <script>
     const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/witze.csv'; // Neue GitHub raw URL
 
     let csvData = [];
+    let currentIndex = 0;
 
     // Funktion zum Laden der CSV-Datei (async)
     async function loadCSV() {
@@ -120,9 +138,10 @@
     // Funktion zum Anzeigen einer zufälligen Zeile aus den CSV-Daten
     function loadRandomLine() {
       if (csvData.length > 0) {
-        const randomIndex = Math.floor(Math.random() * csvData.length);
-        const randomLine = csvData[randomIndex];
+        currentIndex = Math.floor(Math.random() * csvData.length);
+        const randomLine = csvData[currentIndex];
         displayCSVLine(randomLine); // CSV-Zeile anzeigen
+        updateFooter(); // Aktualisiere die Zeileninfo
       } else {
         document.getElementById('csv-content').innerText = 'Keine Daten verfügbar.';
       }
@@ -151,8 +170,16 @@
       document.getElementById('csv-content').innerHTML = htmlContent;
     }
 
+    // Funktion zum Aktualisieren der Fußzeilen-Info
+    function updateFooter() {
+      const footer = document.getElementById('line-info');
+      footer.textContent = `Zeile ${currentIndex + 1} / ${csvData.length}`;
+    }
+
     // CSV beim ersten Laden der Seite laden
     window.onload = loadCSV;
   </script>
 </body>
 </html>
+
+
