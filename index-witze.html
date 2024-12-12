@@ -11,25 +11,34 @@
       font-family: Arial, sans-serif;
       background-color: black;  /* Schwarzer Hintergrund */
       color: white;  /* Weiße Schriftfarbe */
+      padding: 10px 0; /* Oben und unten Platz lassen */
+      box-sizing: border-box; /* Padding in die Gesamthöhe einrechnen */
     }
 
     body {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
       flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
+      justify-content: space-between; /* Platz oben und unten ausgleichen */
+      text-align: center;
     }
 
     .content {
       font-size: 2rem;
       max-width: 90%;
       word-wrap: break-word;
-      margin-bottom: 20px; /* Abstand nach unten */
+      margin: auto 0; /* Zentriert den Inhalt vertikal */
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px; /* Abstand zum unteren Rand */
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 10px 20px;
       font-size: 1rem;
       cursor: pointer;
@@ -72,8 +81,10 @@
 </head>
 <body>
   <div class="content" id="csv-content">Wird geladen...</div>
-  <button onclick="loadRandomLine()">Nächster Witz</button>
-  <a href="index.html"><button id="back-button">Back</button></a>
+  <div class="button-container">
+    <button onclick="loadRandomLine()">Nächster Witz</button>
+    <a href="index.html"><button id="back-button">Back</button></a>
+  </div>
 
   <script>
     const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/witze.csv'; // Neue GitHub raw URL
