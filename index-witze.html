@@ -13,9 +13,6 @@
       color: white;  /* Weiße Schriftfarbe */
       padding: 10px 0; /* Oben und unten Platz lassen */
       box-sizing: border-box; /* Padding in die Gesamthöhe einrechnen */
-    }
-
-    body {
       display: flex;
       flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
       justify-content: space-between; /* Platz oben und unten ausgleichen */
@@ -32,7 +29,6 @@
 
     .button-container {
       display: flex;
-      flex-direction: row;
       justify-content: center; /* Zentriert die Buttons horizontal */
       align-items: center;
       width: 90%;
@@ -42,7 +38,7 @@
 
     .button-container a {
       position: absolute;
-      left: 10px; /* Positioniert den Back-Button links */
+      left: 10px; /* Positioniert den Menu-Button links */
     }
 
     .footer {
@@ -98,10 +94,10 @@
 <body>
   <div class="content" id="csv-content">Wird geladen...</div>
   <div class="button-container">
-    <a href="index.html"><button id="back-button">Back</button></a>
+    <a href="index.html"><button id="menu-button">Menu</button></a>
     <button onclick="loadRandomLine()">Nächster Witz</button>
   </div>
-  <div class="footer" id="line-info">Zeile 0 / 0</div>
+  <div class="footer" id="line-info">Data 0 / 0</div>
 
   <script>
     const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/witze.csv'; // Neue GitHub raw URL
@@ -131,8 +127,7 @@
 
     // Funktion zum Parsen der CSV-Daten
     function parseCSV(text) {
-      const rows = text.split('\n');
-      return rows.map(row => row.trim()).filter(row => row.length > 0);
+      return text.split('\n').map(row => row.trim()).filter(row => row.length > 0);
     }
 
     // Funktion zum Anzeigen einer zufälligen Zeile aus den CSV-Daten
@@ -154,16 +149,11 @@
       let colorClass = 'white-text'; // Beginne mit der weißen Schrift für die erste Spalte
 
       // Über alle Spalten der Zeile iterieren
-      columns.forEach((column, index) => {
+      columns.forEach((column) => {
         if (column.trim() !== '') {
           // Wenn die Spalte Text enthält, wechsle die Farbe abwechselnd
-          if (colorClass === 'white-text') {
-            htmlContent += `<div class="white-text">${column.trim()}</div>`;
-            colorClass = 'grey-text'; // Nächste Spalte grau
-          } else {
-            htmlContent += `<div class="grey-text">${column.trim()}</div>`;
-            colorClass = 'white-text'; // Nächste Spalte wieder weiß
-          }
+          htmlContent += `<div class="${colorClass}">${column.trim()}</div>`;
+          colorClass = colorClass === 'white-text' ? 'grey-text' : 'white-text'; // Abwechselnd die Farben wechseln
         }
       });
 
@@ -173,7 +163,7 @@
     // Funktion zum Aktualisieren der Fußzeilen-Info
     function updateFooter() {
       const footer = document.getElementById('line-info');
-      footer.textContent = `Zeile ${currentIndex + 1} / ${csvData.length}`;
+      footer.textContent = `Data ${currentIndex + 1} / ${csvData.length}`;
     }
 
     // CSV beim ersten Laden der Seite laden
