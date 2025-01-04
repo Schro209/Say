@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unnützes Wissen</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: black;  /* Schwarzer Hintergrund */
+      color: white;  /* Weiße Schriftfarbe */
+      padding: 10px 0; /* Oben und unten Platz lassen */
+      box-sizing: border-box; /* Padding in die Gesamthöhe einrechnen */
+      display: flex;
+      flex-direction: column; /* sorgt dafür, dass die Elemente untereinander angezeigt werden */
+      justify-content: space-between; /* Platz oben und unten ausgleichen */
+      align-items: center; /* Zentriert den Inhalt horizontal */
+      text-align: center;
+    }
+
+    .content {
+      font-size: 2rem;
+      max-width: 90%;
+      word-wrap: break-word;
+      margin: auto 0; /* Zentriert den Inhalt vertikal */
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center; /* Zentriert die Buttons horizontal */
+      align-items: center;
+      width: 90%;
+      gap: 20px; /* Abstand zwischen den Buttons */
+      margin-bottom: 10px; /* Abstand zum unteren Rand */
+    }
+
+    .button-container a {
+      position: absolute;
+      left: 10px; /* Positioniert den Menu-Button links */
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 1rem;
+      color: grey; /* Graue Schrift für die Fußzeile */
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #4CAF50; /* Grüner Button */
+      color: white;  /* Weiße Schriftfarbe im Button */
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;  /* Dunklerer Grünton, wenn der Button gehighlighted wird */
+    }
+
+    .grey-text {
+      color: grey;  /* Graue Schrift für die zweite Spalte */
+    }
+
+    .white-text {
+      color: white;  /* Weiße Schrift für die erste Spalte und alle anderen */
+    }
+
+    @media (max-height: 800px) {
+      .content {
+        font-size: 1.5rem; /* Kleinere Schriftgröße bei kleinerer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-height: 600px) {
+      .content {
+        font-size: 1rem; /* Noch kleinere Schriftgröße bei sehr geringer Bildschirmhöhe */
+      }
+    }
+
+    @media (max-width: 400px) {
+      button {
+        font-size: 0.8rem; /* Kleinere Schriftgröße für Buttons bei schmalen Bildschirmen */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="content" id="csv-content">Wird geladen...</div>
+  <div class="button-container">
+    <a href="index.html"><button id="menu-button">Menu</button></a>
+    <button onclick="loadRandomLine()">Mehr unnützes Wissen</button>
+  </div>
+  <div class="footer" id="line-info">Data 0 / 0</div>
+
+  <script>
+    const csvFile = 'https://raw.githubusercontent.com/Schro209/Say/main/unnützes-wissen.csv'; // Neue GitHub raw URL
+
+    let csvData = [];
+    let currentIndex = 0;
+
+    // Funktion zum Laden der CSV-Datei (async)
+    async function loadCSV() {
+      try {
+        const response = await fetch(csvFile);
+        if (!response.ok) {
+          throw new Error('CSV-Datei konnte nicht geladen werden. Status: ' + response.status);
+        }
+
+        const text = await response.text();
+        csvData = parseCSV(text);  // CSV-Inhalt verarbeiten
+        if (csvData.length > 0) {
+          loadRandomLine(); // Zufällige Zeile anzeigen
+        } else {
+          document.getElementById('csv-content').innerText = 'CSV ist leer oder konnte nicht richtig geladen werden.';
+        }
+      } catch (error) {
+        document.getElementById('csv-content').innerText = 'Fehler beim Laden der CSV. ' + error.message;
+      }
+    }
+
+    // Funktion zum Parsen der CSV-Daten
+    function parseCSV(text) {
+      return text.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+    }
+
+    // Funktion zum Anzeigen einer zufälligen Zeile aus den CSV-Daten
+    function loadRandomLine() {
+      if (csvData.length > 0) {
+        currentIndex = Math.floor(Math.random() * csvData.length);
+        const randomLine = csvData[currentIndex];
+        displayCSVLine(randomLine); // CSV-Zeile anzeigen
+        updateFooter(); // Aktualisiere die Zeileninfo
+      } else {
+        document.getElementById('csv-content').innerText = 'Keine Daten verfügbar.';
+      }
+    }
+
+    // Funktion, um eine CSV-Zeile korrekt darzustellen
+    function displayCSVLine(line) {
+      const columns = line.split(';');  // CSV-Spalten trennen
+      let htmlContent = '';
+      let colorClass = 'white-text'; // Beginne mit der weißen Schrift für die erste Spalte
+
+      // Über alle Spalten der Zeile iterieren
+      columns.forEach((column) => {
+        if (column.trim() !== '') {
+          // Wenn die Spalte Text enthält, wechsle die Farbe abwechselnd
+          htmlContent += `<div class="${colorClass}">${column.trim()}</div>`;
+          colorClass = colorClass === 'white-text' ? 'grey-text' : 'white-text'; // Abwechselnd die Farben wechseln
+        }
+      });
+
+      document.getElementById('csv-content').innerHTML = htmlContent;
+    }
+
+    // Funktion zum Aktualisieren der Fußzeilen-Info
+    function updateFooter() {
+      const footer = document.getElementById('line-info');
+      footer.textContent = `Data ${currentIndex + 1} / ${csvData.length}`;
+    }
+
+    // CSV beim ersten Laden der Seite laden
+    window.onload = loadCSV;
+  </script>
+</body>
+</html>
+
+
